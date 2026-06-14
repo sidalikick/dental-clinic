@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-800 font-sans antialiased;
+  }
+}
+
+/* Glassmorphism utilities */
+.glass {
+  @apply bg-white bg-opacity-70 backdrop-blur-lg border border-white border-opacity-30 shadow-lg;
+}
+
+.glass-dark {
+  @apply bg-slate-900/80 backdrop-blur-xl border border-slate-800 shadow-2xl;
+}
+
+.glass-premium {
+  @apply bg-gradient-to-br from-slate-900/90 to-blue-900/80 backdrop-blur-2xl border border-white/10 shadow-2xl;
+}
+
