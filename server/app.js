@@ -35,6 +35,62 @@ app.use((req, res, next) => {
 // Initialize Database Tables if missing
 async function initTables() {
   try {
+    // 1. Create Core Tables
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS patients (
+          id SERIAL PRIMARY KEY,
+          name VARCHAR(255) NOT NULL,
+          phone VARCHAR(20) NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE(name, phone)
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS appointments (
+          id VARCHAR(20) PRIMARY KEY,
+          patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+          service VARCHAR(100) NOT NULL,
+          appointment_date DATE NOT NULL,
+          appointment_time TIME NOT NULL,
+          status VARCHAR(50) DEFAULT 'قيد الانتظار', 
+          queue_number INTEGER,
+          notes TEXT,
+          prescription TEXT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+          id SERIAL PRIMARY KEY,
+          username VARCHAR(50) UNIQUE NOT NULL,
+          password VARCHAR(255) NOT NULL,
+          role VARCHAR(20) NOT NULL,
+          full_name VARCHAR(100),
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS clinic_settings (
+          key VARCHAR(50) PRIMARY KEY,
+          value TEXT NOT NULL
+      );
+    `);
+
+    // Seed default users if empty
+    const checkUsers = await pool.query('SELECT COUNT(*) FROM users');
+    if (parseInt(checkUsers.rows[0].count) === 0) {
+      await pool.query(`
+        INSERT INTO users (username, password, role, full_name) VALUES 
+        ('doctor', '1234', 'doctor', 'مدير العيادة'),
+        ('reception', '1234', 'reception', 'موظف الاستقبال')
+        ON CONFLICT (username) DO NOTHING
+      `);
+      console.log('Seeded default users.');
+    }
+
     await pool.query(`
       CREATE TABLE IF NOT EXISTS prescription_templates (
           id SERIAL PRIMARY KEY,
