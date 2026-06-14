@@ -13,7 +13,10 @@ const { runAutoRepair } = require('./db_init_service.js');
 
 async function launch() {
     try {
-        await runAutoRepair();
+        // Bypass auto-repair on production hostings (Render/Supabase)
+        if (!process.env.DATABASE_URL) {
+            await runAutoRepair();
+        }
         // Load the actual obfuscated app (or normal app.js if not obfuscated)
         if (require('fs').existsSync(require('path').join(__dirname, 'app-obfuscated.js'))) {
             require('./app-obfuscated.js');
