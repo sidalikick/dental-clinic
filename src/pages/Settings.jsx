@@ -13,6 +13,7 @@ import {
   AlertCircle,
   Video,
   Palette,
+  FileText,
   Image as ImageIcon,
   Stethoscope,
   CalendarDays,
@@ -55,6 +56,14 @@ export default function Settings() {
     doctorName: 'Dr. BOUYOUCEF SOFIANE',
     specialty: 'Chirurgie Dentaire'
   });
+  const [prescriptionSettings, setPrescriptionSettings] = useState({
+    doctorName: 'Dr. BOUYOUCEF SOFIANE',
+    doctorNameAr: 'الحكيم: بويوسف سفيان',
+    specialtyFr: "Dr en chirurgie\nChirurgie parodontale\nRadio dentaire\nODF (Appareille dentaire)\nBlanchiment des dents\nImplantation dentaire",
+    specialtyAr: "أمراض و جراحة اللثة\nتركيب الأسنان\nتصوير بالأشعة\nتقويم الأسنان\nتبييض الأسنان\nزراعة الأسنان",
+    address: "Cité Frères Mernache (Tala larbaa) Tizi N'bechar / Sétif",
+    phone: '0661 22 16 17'
+  });
   const [services, setServices] = useState([]);
   const [newService, setNewService] = useState({ name: '', price: '' });
   const [maxAppointments, setMaxAppointments] = useState('20');
@@ -70,6 +79,7 @@ export default function Settings() {
     fetchVideo();
     fetchUsers();
     fetchClinicInfo();
+    fetchPrescriptionSettings();
     fetchServicesList();
     fetchMaxAppointments();
     fetchServerIp();
@@ -100,6 +110,16 @@ export default function Settings() {
       if (data) setClinicInfo(data);
     } catch (err) {
       console.error('Error fetching clinic info:', err);
+    }
+  };
+
+  const fetchPrescriptionSettings = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/settings/prescription`);
+      const data = await res.json();
+      if (data) setPrescriptionSettings(data);
+    } catch (err) {
+      console.error('Error fetching prescription settings:', err);
     }
   };
 
@@ -240,6 +260,27 @@ export default function Settings() {
       }
     } catch (err) {
       showMessage('حدث خطأ أثناء حفظ بيانات العيادة', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdatePrescription = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/settings/prescription`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(prescriptionSettings)
+      });
+      if (res.ok) {
+        showMessage('تم تحديث معلومات تصميم الوصفة الطبية بنجاح');
+      } else {
+        showMessage('فشل تحديث معلومات الوصفة', 'error');
+      }
+    } catch (err) {
+      showMessage('حدث خطأ أثناء حفظ معلومات الوصفة', 'error');
     } finally {
       setLoading(false);
     }
@@ -509,6 +550,15 @@ export default function Settings() {
           >
             <Palette size={20} />
             تصميم وبيانات العيادة
+          </button>
+          <button 
+            onClick={() => setActiveTab('prescription')}
+            className={`w-full flex items-center gap-3 px-6 py-4 rounded-2xl font-bold transition-all ${
+              activeTab === 'prescription' ? 'bg-primary text-white shadow-xl shadow-primary/20 scale-[1.02]' : 'bg-white text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <FileText size={20} />
+            إعدادات الوصفة الطبية (A5)
           </button>
           <button 
             onClick={() => setActiveTab('services')}
@@ -817,105 +867,197 @@ export default function Settings() {
                     <Palette size={24} />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-slate-800">بيانات وتصميم الوصفة الطبية (A5)</h2>
-                    <p className="text-slate-500">تعديل معلومات الهيدر، الطبيب، العنوان، وشعار العيادة للطباعة المخصصة</p>
+                    <h2 className="text-2xl font-bold text-slate-800">بيانات وتصميم الموقع الإلكتروني العام</h2>
+                    <p className="text-slate-500">تعديل معلومات العيادة، أوقات العمل، وروابط التواصل المعروضة للزوار والمرضى</p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                  {/* Form */}
-                  <form onSubmit={handleUpdateClinicInfo} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-1">اسم الطبيب (مثال: د. أحمد علي)</label>
-                        <input 
-                          type="text"
-                          required
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary text-base"
-                          value={clinicInfo.doctorName || ''}
-                          onChange={e => setClinicInfo({...clinicInfo, doctorName: e.target.value})}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-1">التخصص (مثال: طب وجراحة الأسنان)</label>
-                        <input 
-                          type="text"
-                          required
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary text-base"
-                          value={clinicInfo.specialty || ''}
-                          onChange={e => setClinicInfo({...clinicInfo, specialty: e.target.value})}
-                        />
-                      </div>
-                    </div>
+                <form onSubmit={handleUpdateClinicInfo} className="space-y-6 max-w-3xl">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-1">اسم العيادة / المؤسسة الطبية</label>
+                      <label className="block text-sm font-bold text-slate-700 mb-2">اسم العيادة / المؤسسة الطبية</label>
                       <input 
                         type="text"
                         required
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary text-base"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-base font-semibold"
                         value={clinicInfo.name || ''}
                         onChange={e => setClinicInfo({...clinicInfo, name: e.target.value})}
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-1">رابط شعار العيادة (Logo URL)</label>
+                      <label className="block text-sm font-bold text-slate-700 mb-2">شعار العيادة (رابط الصورة)</label>
                       <input 
                         type="text"
                         placeholder="https://example.com/logo.png"
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary text-sm"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
                         value={clinicInfo.logoUrl || ''}
                         onChange={e => setClinicInfo({...clinicInfo, logoUrl: e.target.value})}
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-1">رقم الهاتف (الظاهر أسفل الوصفة)</label>
-                        <input 
-                          type="text"
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary text-left text-sm"
-                          dir="ltr"
-                          value={clinicInfo.phone || ''}
-                          onChange={e => setClinicInfo({...clinicInfo, phone: e.target.value})}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-1">أوقات العمل</label>
-                        <input 
-                          type="text"
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary text-sm"
-                          value={clinicInfo.workingHours || ''}
-                          onChange={e => setClinicInfo({...clinicInfo, workingHours: e.target.value})}
-                        />
-                      </div>
-                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-1">العنوان الجغرافي للعيادة</label>
+                      <label className="block text-sm font-bold text-slate-700 mb-2">رقم الهاتف العام</label>
                       <input 
                         type="text"
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary text-sm"
-                        value={clinicInfo.address || ''}
-                        onChange={e => setClinicInfo({...clinicInfo, address: e.target.value})}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-left text-base font-semibold"
+                        dir="ltr"
+                        value={clinicInfo.phone || ''}
+                        onChange={e => setClinicInfo({...clinicInfo, phone: e.target.value})}
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-bold text-slate-700 mb-2">أوقات العمل</label>
+                      <input 
+                        type="text"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
+                        value={clinicInfo.workingHours || ''}
+                        onChange={e => setClinicInfo({...clinicInfo, workingHours: e.target.value})}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">العنوان الجغرافي للموقع العام</label>
+                    <input 
+                      type="text"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
+                      value={clinicInfo.address || ''}
+                      onChange={e => setClinicInfo({...clinicInfo, address: e.target.value})}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                      <label className="block text-sm font-bold text-slate-700 mb-2">رابط الخرائط (Google Maps)</label>
+                      <input 
+                        type="text"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-left text-sm"
+                        dir="ltr"
+                        value={clinicInfo.mapsLink || ''}
+                        onChange={e => setClinicInfo({...clinicInfo, mapsLink: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-slate-700 mb-2">صفحة Facebook (رابط)</label>
+                      <input 
+                        type="text"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-left text-sm"
+                        dir="ltr"
+                        value={clinicInfo.facebook || ''}
+                        onChange={e => setClinicInfo({...clinicInfo, facebook: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-slate-700 mb-2">صفحة Instagram (رابط)</label>
+                      <input 
+                        type="text"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-left text-sm"
+                        dir="ltr"
+                        value={clinicInfo.instagram || ''}
+                        onChange={e => setClinicInfo({...clinicInfo, instagram: e.target.value})}
+                      />
+                    </div>
+                  </div>
+
+                  <button 
+                    type="submit"
+                    disabled={loading}
+                    className="flex items-center justify-center gap-3 bg-primary hover:bg-primary/90 text-white font-bold px-10 py-4 rounded-2xl transition-all shadow-lg active:scale-95 disabled:opacity-50 mt-4"
+                  >
+                    <Save size={18} />
+                    {loading ? 'جاري الحفظ...' : 'حفظ إعدادات الموقع العام'}
+                  </button>
+                </form>
+              </div>
+            )}
+
+            {activeTab === 'prescription' && (
+              <div className="space-y-8 animate-in fade-in duration-500">
+                <div className="flex items-center gap-4 border-b border-slate-100 pb-6">
+                  <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center">
+                    <FileText size={24} />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-slate-800">بيانات وتصميم الوصفة الطبية (Ordonnance A5)</h2>
+                    <p className="text-slate-500">تعديل التخصصات الطبية، اسم الطبيب، العنوان والهاتف الخاصين بالورقة المطبوعة للوصفة</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                  {/* Form */}
+                  <form onSubmit={handleUpdatePrescription} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-1">صفحة Facebook (رابط)</label>
+                        <label className="block text-sm font-bold text-slate-700 mb-1">اسم الطبيب بالفرنسية</label>
                         <input 
                           type="text"
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary text-left text-sm"
+                          required
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary text-base font-semibold text-left"
                           dir="ltr"
-                          value={clinicInfo.facebook || ''}
-                          onChange={e => setClinicInfo({...clinicInfo, facebook: e.target.value})}
+                          value={prescriptionSettings.doctorName || ''}
+                          onChange={e => setPrescriptionSettings({...prescriptionSettings, doctorName: e.target.value})}
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-1">صفحة Instagram (رابط)</label>
+                        <label className="block text-sm font-bold text-slate-700 mb-1">اسم الطبيب بالعربية</label>
                         <input 
                           type="text"
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary text-left text-sm"
+                          required
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary text-base font-semibold text-right"
+                          dir="rtl"
+                          value={prescriptionSettings.doctorNameAr || ''}
+                          onChange={e => setPrescriptionSettings({...prescriptionSettings, doctorNameAr: e.target.value})}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-1">التخصصات بالفرنسية (سطر بسطر)</label>
+                        <textarea 
+                          rows="6"
+                          required
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary text-xs font-mono text-left"
                           dir="ltr"
-                          value={clinicInfo.instagram || ''}
-                          onChange={e => setClinicInfo({...clinicInfo, instagram: e.target.value})}
+                          value={prescriptionSettings.specialtyFr || ''}
+                          onChange={e => setPrescriptionSettings({...prescriptionSettings, specialtyFr: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-1">التخصصات بالعربية (سطر بسطر)</label>
+                        <textarea 
+                          rows="6"
+                          required
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary text-xs font-semibold text-right"
+                          dir="rtl"
+                          value={prescriptionSettings.specialtyAr || ''}
+                          onChange={e => setPrescriptionSettings({...prescriptionSettings, specialtyAr: e.target.value})}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-1">رقم الهاتف في الوصفة</label>
+                        <input 
+                          type="text"
+                          required
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary text-left text-sm font-mono"
+                          dir="ltr"
+                          value={prescriptionSettings.phone || ''}
+                          onChange={e => setPrescriptionSettings({...prescriptionSettings, phone: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-1">عنوان العيادة في الوصفة</label>
+                        <input 
+                          type="text"
+                          required
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary text-sm font-semibold"
+                          value={prescriptionSettings.address || ''}
+                          onChange={e => setPrescriptionSettings({...prescriptionSettings, address: e.target.value})}
                         />
                       </div>
                     </div>
@@ -926,93 +1068,82 @@ export default function Settings() {
                       className="flex items-center justify-center gap-3 bg-primary hover:bg-primary/90 text-white font-bold px-10 py-3 rounded-2xl transition-all shadow-lg active:scale-95 disabled:opacity-50 mt-4"
                     >
                       <Save size={18} />
-                      {loading ? 'جاري الحفظ...' : 'حفظ إعدادات الهوية والتصميم'}
+                      {loading ? 'جاري الحفظ...' : 'حفظ إعدادات الوصفة الطبية'}
                     </button>
                   </form>
 
                   {/* A5 Prescription Live Preview */}
-                  <div className="border border-slate-200 rounded-[2rem] p-6 bg-white shadow-sm flex flex-col justify-between max-w-[380px] w-full mx-auto min-h-[500px] relative overflow-hidden">
+                  <div className="border border-slate-200 rounded-[2rem] p-5 bg-white shadow-sm flex flex-col justify-between max-w-[360px] w-full mx-auto min-h-[490px] relative overflow-hidden">
                     
-                    {/* Watermark Logo/Cross */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-[0.06] pointer-events-none select-none">
-                      {clinicInfo.logoUrl ? (
-                        <img src={clinicInfo.logoUrl} alt="" className="w-48 h-48 object-contain" />
-                      ) : (
-                        <svg viewBox="0 0 200 200" className="w-48 h-48" fill="none" strokeWidth="8">
-                          <path d="M100 30 v140 M30 100 h140" stroke="#0093a8" strokeWidth="24" />
-                          <path d="M100 30 v140 M30 100 h140" stroke="#aee2e6" strokeWidth="12" />
-                          <path d="M60 70 C40 80, 40 120, 70 140 C100 160, 130 150, 150 120" stroke="#0093a8" strokeWidth="8" />
-                          <circle cx="150" cy="120" r="10" fill="#0093a8" />
-                          <path d="M60 70 L50 60 C45 55, 45 45, 50 40" stroke="#0093a8" strokeWidth="6" />
-                          <path d="M60 70 L70 60 C75 55, 75 45, 70 40" stroke="#0093a8" strokeWidth="6" />
-                        </svg>
-                      )}
+                    {/* Watermark Logo (Tooth) */}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-[0.06] pointer-events-none select-none z-0">
+                      <svg viewBox="0 0 100 100" className="w-56 h-56 text-[#0093a8]" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M50 15 C40 10, 20 12, 20 40 C20 60, 30 75, 35 90 C40 85, 45 80, 50 82 C55 80, 60 85, 65 90 C70 75, 80 60, 80 40 C80 12, 60 10, 50 15 Z" />
+                        <path d="M50 25 C45 35, 40 45, 30 50" strokeWidth="1" />
+                        <path d="M50 25 C55 35, 60 45, 70 50" strokeWidth="1" />
+                      </svg>
                     </div>
 
-                    <div className="relative z-10 flex flex-col h-full justify-between">
+                    <div className="relative z-10 flex flex-col h-full justify-between flex-1">
                       <div>
                         {/* Header Section */}
-                        <div className="flex justify-between items-start mb-6">
-                          {/* Top Left: Logo */}
-                          <div>
-                            {clinicInfo.logoUrl ? (
-                              <img src={clinicInfo.logoUrl} alt="Logo" className="w-16 h-16 object-contain" />
-                            ) : (
-                              <svg viewBox="0 0 200 200" className="w-16 h-16" fill="none" strokeWidth="8">
-                                <path d="M100 30 v140 M30 100 h140" stroke="#0093a8" strokeWidth="24" />
-                                <path d="M100 30 v140 M30 100 h140" stroke="#aee2e6" strokeWidth="12" />
-                                <path d="M60 70 C40 80, 40 120, 70 140 C100 160, 130 150, 150 120" stroke="#0093a8" strokeWidth="8" />
-                                <circle cx="150" cy="120" r="10" fill="#0093a8" />
-                                <path d="M60 70 L50 60 C45 55, 45 45, 50 40" stroke="#0093a8" strokeWidth="6" />
-                                <path d="M60 70 L70 60 C75 55, 75 45, 70 40" stroke="#0093a8" strokeWidth="6" />
-                              </svg>
-                            )}
+                        <div className="text-center mb-1 border-b border-slate-900 pb-1">
+                          <h4 className="font-extrabold text-sm uppercase text-slate-950">CABINET DENTAIRE</h4>
+                          <p className="text-xs font-bold text-slate-900">{prescriptionSettings.doctorName || 'Dr. BOUYOUCEF SOFIANE'}</p>
+                          <p className="text-xs font-bold text-slate-900" style={{ direction: 'rtl' }}>{prescriptionSettings.doctorNameAr || 'الحكيم: بويوسف سفيان'}</p>
+                        </div>
+
+                        {/* Two Columns Specialty Section */}
+                        <div className="flex justify-between items-start text-[8px] font-semibold text-slate-800 leading-tight mb-1">
+                          {/* Left Column (French) */}
+                          <div className="text-left">
+                            {(prescriptionSettings.specialtyFr || "Dr en chirurgie\nChirurgie parodontale")
+                              .split('\n')
+                              .map((s, i) => <p key={i}>{s}</p>)}
                           </div>
 
-                          {/* Top Right: Doctor Info */}
-                          <div className="text-right text-slate-800">
-                            <h4 className="font-extrabold text-base text-[#0093a8]">{clinicInfo.doctorName || 'Oliver Wilson, M.D.'}</h4>
-                            <p className="text-xs font-semibold text-[#0093a8] opacity-90">{clinicInfo.specialty || 'Urologist'}</p>
-                            <p className="text-xs font-bold text-[#0093a8] mt-2">{clinicInfo.name || 'Borcelle Medical'}</p>
-                            <p className="text-[10px] text-slate-500 font-medium">{clinicInfo.address || '123 Anywhere St. Any City'}</p>
+                          {/* Right Column (Arabic) */}
+                          <div className="text-right" style={{ direction: 'rtl' }}>
+                            {(prescriptionSettings.specialtyAr || "أمراض و جراحة اللثة\nتركيب الأسنان")
+                              .split('\n')
+                              .map((s, i) => <p key={i}>{s}</p>)}
                           </div>
                         </div>
+
+                        <hr className="border-t border-slate-900 my-1" />
 
                         {/* Patient info details with lines */}
-                        <div className="grid grid-cols-3 gap-2 text-xs font-bold text-slate-700 border-t-2 border-[#0093a8] pt-4 mb-6">
+                        <div className="grid grid-cols-3 gap-1 text-[9px] font-bold text-slate-700 pt-1 mb-2">
                           <div className="col-span-2 flex items-center gap-1">
-                            <span className="text-[#0093a8] text-nowrap">Patient's Name:</span>
-                            <span className="border-b border-[#0093a8]/50 flex-1 min-h-[1.2rem] text-slate-800 px-1 font-medium">محمد بن علي</span>
+                            <span className="text-slate-950">Nom:</span>
+                            <span className="border-b border-dashed border-slate-500 flex-1 min-h-[0.9rem] text-slate-900 font-medium pl-1">محمد</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <span className="text-[#0093a8]">Date:</span>
-                            <span className="border-b border-[#0093a8]/50 flex-1 min-h-[1.2rem] text-slate-800 px-1 font-medium text-center font-mono">03/06/2026</span>
+                            <span className="text-slate-950">Date:</span>
+                            <span className="border-b border-dashed border-slate-500 flex-1 min-h-[0.9rem] text-slate-900 font-mono text-center">15/06/2026</span>
                           </div>
-                          <div className="col-span-3 flex items-center gap-1 mt-2">
-                            <span className="text-[#0093a8]">Age:</span>
-                            <span className="border-b border-[#0093a8]/50 w-24 min-h-[1.2rem] text-slate-800 px-1 font-medium text-center font-mono">28 سنة</span>
+                          <div className="col-span-3 flex items-center gap-1 mt-1">
+                            <span className="text-slate-950">Age:</span>
+                            <span className="border-b border-dashed border-slate-500 w-16 min-h-[0.9rem] text-slate-900 text-center font-mono">28 سنة</span>
                           </div>
                         </div>
 
+                        <hr className="border-t border-slate-500 border-dashed my-2" />
+
                         {/* Rx Section */}
-                        <div className="my-6">
-                          <div className="text-[#0093a8] font-serif italic font-extrabold text-2xl mb-3">Rx</div>
-                          <div className="font-mono text-xs pl-2 space-y-2 text-slate-800 leading-relaxed">
-                            <p>1. Amoxicilline 500mg - 1 حبة 3 مرات يومياً - لمدة 7 أيام</p>
-                            <p>2. Paracetamol 1g - عند الحاجة</p>
+                        <div className="my-2">
+                          <div className="text-slate-950 font-serif italic font-extrabold text-lg mb-1">Rx</div>
+                          <div className="font-mono text-[9px] pl-2 space-y-1 text-slate-900">
+                            <p>1. Augmentin 625mg - 1 comp 3x/j (7j)</p>
+                            <p>2. Doliprane 1g - si douleur</p>
                           </div>
                         </div>
                       </div>
 
                       {/* Footer Section */}
-                      <div className="border-t-2 border-[#0093a8]/30 pt-4 mt-auto flex justify-between items-end">
-                        <div className="text-right">
-                          <p className="text-[10px] font-bold text-[#0093a8]">Contact Number:</p>
-                          <p className="text-xs font-black text-slate-800 font-mono">{clinicInfo.phone || '+123-456-7890'}</p>
-                        </div>
-                        <div className="text-center w-32 border-t border-[#0093a8] pt-1">
-                          <p className="text-[9px] font-bold text-[#0093a8]">Signature</p>
-                        </div>
+                      <div className="border-t border-slate-900 pt-1.5 mt-auto flex flex-col items-center justify-center text-[7.5px] font-semibold text-slate-800 space-y-0.5">
+                        <p>{prescriptionSettings.address || "Cité Frères Mernache (Tala larbaa) Tizi N'bechar / Sétif"}</p>
+                        <p className="font-mono text-[8px] font-bold">📞 {prescriptionSettings.phone || '0661 22 16 17'}</p>
                       </div>
                     </div>
                   </div>

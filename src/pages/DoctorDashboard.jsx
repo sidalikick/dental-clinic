@@ -19,6 +19,7 @@ export default function DoctorDashboard() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showDoseSuggestions, setShowDoseSuggestions] = useState(false);
   const [clinicInfo, setClinicInfo] = useState(null);
+  const [prescriptionSettings, setPrescriptionSettings] = useState(null);
   const [patientName, setPatientName] = useState('');
   const [patientAge, setPatientAge] = useState('');
   
@@ -48,6 +49,12 @@ export default function DoctorDashboard() {
       setPresets(prs || []);
       const info = await getClinicInfo();
       setClinicInfo(info);
+      
+      const presRes = await fetch('/api/settings/prescription');
+      if (presRes.ok) {
+        const presData = await presRes.json();
+        setPrescriptionSettings(presData);
+      }
     } catch (err) {
       console.error("Error loading appointments:", err);
     }
@@ -574,8 +581,8 @@ export default function DoctorDashboard() {
                   {/* Top Centered Title */}
                   <div className="text-center mb-1">
                     <h1 className="font-extrabold text-xl tracking-wider text-slate-950 uppercase">CABINET DENTAIRE</h1>
-                    <h2 className="font-bold text-base text-slate-900">Dr : BOUYOUCEF SOFIANE</h2>
-                    <h2 className="font-bold text-base text-slate-900" style={{ direction: 'rtl' }}>الحكيم: بويوسف سفيان</h2>
+                    <h2 className="font-bold text-base text-slate-900">{prescriptionSettings?.doctorName || 'Dr : BOUYOUCEF SOFIANE'}</h2>
+                    <h2 className="font-bold text-base text-slate-900" style={{ direction: 'rtl' }}>{prescriptionSettings?.doctorNameAr || 'الحكيم: بويوسف سفيان'}</h2>
                   </div>
 
                   {/* Horizontal Line separator */}
@@ -585,22 +592,16 @@ export default function DoctorDashboard() {
                   <div className="flex justify-between items-start text-[10.5px] font-semibold text-slate-800 leading-tight mb-1">
                     {/* Left Column (French) */}
                     <div className="text-left space-y-0.5">
-                      <p>Dr en chirurgie</p>
-                      <p>Chirurgie parodontale</p>
-                      <p>Radio dentaire</p>
-                      <p>ODF (Appareille dentaire)</p>
-                      <p>Blanchiment des dents</p>
-                      <p>Implantation dentaire</p>
+                      {(prescriptionSettings?.specialtyFr || "Dr en chirurgie\nChirurgie parodontale\nRadio dentaire\nODF (Appareille dentaire)\nBlanchiment des dents\nImplantation dentaire")
+                        .split('\n')
+                        .map((s, i) => <p key={i}>{s}</p>)}
                     </div>
 
                     {/* Right Column (Arabic) */}
                     <div className="text-right space-y-0.5" style={{ direction: 'rtl' }}>
-                      <p>أمراض و جراحة اللثة</p>
-                      <p>تركيب الأسنان</p>
-                      <p>تصوير بالأشعة</p>
-                      <p>تقويم الأسنان</p>
-                      <p>تبييض الأسنان</p>
-                      <p>زراعة الأسنان</p>
+                      {(prescriptionSettings?.specialtyAr || "أمراض و جراحة اللثة\nتركيب الأسنان\nتصوير بالأشعة\nتقويم الأسنان\nتبييض الأسنان\nزراعة الأسنان")
+                        .split('\n')
+                        .map((s, i) => <p key={i}>{s}</p>)}
                     </div>
                   </div>
 
@@ -688,8 +689,8 @@ export default function DoctorDashboard() {
                 <div className="mt-auto pt-2">
                   <hr className="border-t-[1.5px] border-slate-900 my-1" />
                   <div className="flex flex-col items-center justify-center text-[10px] font-semibold text-slate-800 space-y-0.5">
-                    <p>Cité Frères Mernache (Tala larbaa) Tizi N'bechar / Sétif</p>
-                    <p className="font-mono text-[11px] font-bold">📞 0661 22 16 17</p>
+                    <p>{prescriptionSettings?.address || "Cité Frères Mernache (Tala larbaa) Tizi N'bechar / Sétif"}</p>
+                    <p className="font-mono text-[11px] font-bold">📞 {prescriptionSettings?.phone || '0661 22 16 17'}</p>
                   </div>
                 </div>
               </div>
