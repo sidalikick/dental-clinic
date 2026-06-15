@@ -684,6 +684,43 @@ app.put('/api/settings/clinic-info', async (req, res) => {
   }
 });
 
+// GET Prescription settings
+app.get('/api/settings/prescription', async (req, res) => {
+  try {
+    const result = await pool.query("SELECT value FROM clinic_settings WHERE key = 'prescription_info'");
+    if (result.rows.length === 0) {
+      res.json({
+        doctorName: 'Dr. BOUYOUCEF SOFIANE',
+        doctorNameAr: 'الحكيم: بويوسف سفيان',
+        specialtyFr: "Dr en chirurgie\nChirurgie parodontale\nRadio dentaire\nODF (Appareille dentaire)\nBlanchiment des dents\nImplantation dentaire",
+        specialtyAr: "أمراض و جراحة اللثة\nتركيب الأسنان\nتصوير بالأشعة\nتقويم الأسنان\nتبييض الأسنان\nزراعة الأسنان",
+        address: "Cité Frères Mernache (Tala larbaa) Tizi N'bechar / Sétif",
+        phone: '0661 22 16 17'
+      });
+    } else {
+      res.json(JSON.parse(result.rows[0].value));
+    }
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+});
+
+// PUT Prescription settings
+app.put('/api/settings/prescription', async (req, res) => {
+  const value = JSON.stringify(req.body);
+  try {
+    const check = await pool.query("SELECT key FROM clinic_settings WHERE key = 'prescription_info'");
+    if (check.rows.length === 0) {
+      await pool.query("INSERT INTO clinic_settings (key, value) VALUES ('prescription_info', $1)", [value]);
+    } else {
+      await pool.query("UPDATE clinic_settings SET value = $1 WHERE key = 'prescription_info'", [value]);
+    }
+    res.json({ message: 'تم تحديث معلومات الوصفة الطبية بنجاح' });
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+});
+
 // Update Payment Status (separate endpoint)
 app.put('/api/appointments/:id/payment', async (req, res) => {
   const { id } = req.params;
