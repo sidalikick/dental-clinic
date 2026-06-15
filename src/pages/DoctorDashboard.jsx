@@ -138,12 +138,7 @@ export default function DoctorDashboard() {
       }
     }
 
-    const cleanDose = medForm.dose
-      .replace(/حبة/g, '')
-      .replace(/مرات/g, '')
-      .replace(/يومياً/g, '')
-      .replace(/\s+/g, ' ')
-      .trim();
+    const cleanDose = medForm.dose.trim();
     
     let parts = [medForm.medicine.trim()];
     if (cleanDose) parts.push(cleanDose);
@@ -563,110 +558,138 @@ export default function DoctorDashboard() {
             `}} />
 
             {/* A5 Prescription Layout for Print */}
-            <div className="hidden print:flex flex-col justify-between h-full w-full relative overflow-hidden p-8 font-sans" style={{ direction: 'ltr', minHeight: '190mm' }}>
+            <div className="hidden print:flex flex-col justify-between h-full w-full relative overflow-hidden p-6 font-sans text-slate-900" style={{ direction: 'ltr', minHeight: '190mm' }}>
               
-              {/* Watermark Logo/Cross */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-[0.05] pointer-events-none select-none">
-                {clinicInfo?.logoUrl ? (
-                  <img src={clinicInfo.logoUrl} alt="" className="w-64 h-64 object-contain" />
-                ) : (
-                  <svg viewBox="0 0 200 200" className="w-64 h-64" fill="none" strokeWidth="8">
-                    <path d="M100 30 v140 M30 100 h140" stroke="#0093a8" strokeWidth="24" />
-                    <path d="M100 30 v140 M30 100 h140" stroke="#aee2e6" strokeWidth="12" />
-                    <path d="M60 70 C40 80, 40 120, 70 140 C100 160, 130 150, 150 120" stroke="#0093a8" strokeWidth="8" />
-                    <circle cx="150" cy="120" r="10" fill="#0093a8" />
-                    <path d="M60 70 L50 60 C45 55, 45 45, 50 40" stroke="#0093a8" strokeWidth="6" />
-                    <path d="M60 70 L70 60 C75 55, 75 45, 70 40" stroke="#0093a8" strokeWidth="6" />
-                  </svg>
-                )}
+              {/* Watermark Logo (Tooth) */}
+              <div className="absolute inset-0 flex items-center justify-center opacity-[0.06] pointer-events-none select-none z-0">
+                <svg viewBox="0 0 100 100" className="w-72 h-72 text-[#0093a8]" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M50 15 C40 10, 20 12, 20 40 C20 60, 30 75, 35 90 C40 85, 45 80, 50 82 C55 80, 60 85, 65 90 C70 75, 80 60, 80 40 C80 12, 60 10, 50 15 Z" />
+                  <path d="M50 25 C45 35, 40 45, 30 50" strokeWidth="1" />
+                  <path d="M50 25 C55 35, 60 45, 70 50" strokeWidth="1" />
+                </svg>
               </div>
 
               <div className="relative z-10 flex flex-col h-full justify-between flex-1">
                 <div>
-                  {/* Header Section */}
-                  <div className="flex justify-between items-start mb-6">
-                    {/* Top Left: Logo */}
-                    <div>
-                      {clinicInfo?.logoUrl ? (
-                        <img src={clinicInfo.logoUrl} alt="Logo" className="w-20 h-20 object-contain" />
-                      ) : (
-                        <svg viewBox="0 0 200 200" className="w-20 h-20" fill="none" strokeWidth="8">
-                          <path d="M100 30 v140 M30 100 h140" stroke="#0093a8" strokeWidth="24" />
-                          <path d="M100 30 v140 M30 100 h140" stroke="#aee2e6" strokeWidth="12" />
-                          <path d="M60 70 C40 80, 40 120, 70 140 C100 160, 130 150, 150 120" stroke="#0093a8" strokeWidth="8" />
-                          <circle cx="150" cy="120" r="10" fill="#0093a8" />
-                          <path d="M60 70 L50 60 C45 55, 45 45, 50 40" stroke="#0093a8" strokeWidth="6" />
-                          <path d="M60 70 L70 60 C75 55, 75 45, 70 40" stroke="#0093a8" strokeWidth="6" />
-                        </svg>
-                      )}
+                  {/* Top Centered Title */}
+                  <div className="text-center mb-1">
+                    <h1 className="font-extrabold text-xl tracking-wider text-slate-950 uppercase">CABINET DENTAIRE</h1>
+                    <h2 className="font-bold text-base text-slate-900">Dr : BOUYOUCEF SOFIANE</h2>
+                    <h2 className="font-bold text-base text-slate-900" style={{ direction: 'rtl' }}>الحكيم: بويوسف سفيان</h2>
+                  </div>
+
+                  {/* Horizontal Line separator */}
+                  <hr className="border-t-[1.5px] border-slate-900 my-1.5" />
+
+                  {/* Two Columns Specialty Section */}
+                  <div className="flex justify-between items-start text-[10.5px] font-semibold text-slate-800 leading-tight mb-1">
+                    {/* Left Column (French) */}
+                    <div className="text-left space-y-0.5">
+                      <p>Dr en chirurgie</p>
+                      <p>Chirurgie parodontale</p>
+                      <p>Radio dentaire</p>
+                      <p>ODF (Appareille dentaire)</p>
+                      <p>Blanchiment des dents</p>
+                      <p>Implantation dentaire</p>
                     </div>
 
-                    {/* Top Right: Doctor Info */}
-                    <div className="text-right text-slate-800">
-                      <h4 className="font-extrabold text-lg text-[#0093a8]">{clinicInfo?.doctorName || 'Oliver Wilson, M.D.'}</h4>
-                      <p className="text-xs font-semibold text-[#0093a8] opacity-90">{clinicInfo?.specialty || 'Urologist'}</p>
-                      <p className="text-xs font-bold text-[#0093a8] mt-2">{clinicInfo?.name || 'Borcelle Medical'}</p>
-                      <p className="text-[10px] text-slate-500 font-medium">{clinicInfo?.address || '123 Anywhere St. Any City'}</p>
+                    {/* Right Column (Arabic) */}
+                    <div className="text-right space-y-0.5" style={{ direction: 'rtl' }}>
+                      <p>أمراض و جراحة اللثة</p>
+                      <p>تركيب الأسنان</p>
+                      <p>تصوير بالأشعة</p>
+                      <p>تقويم الأسنان</p>
+                      <p>تبييض الأسنان</p>
+                      <p>زراعة الأسنان</p>
                     </div>
                   </div>
 
-                  {/* Patient info details with lines */}
-                  <div className="grid grid-cols-3 gap-2 text-xs font-bold text-slate-700 border-t-2 border-[#0093a8] pt-4 mb-6">
-                    <div className="col-span-2 flex items-center gap-1">
-                      <span className="text-[#0093a8] text-nowrap">Patient's Name:</span>
-                      <span className="border-b border-[#0093a8]/50 flex-1 min-h-[1.2rem] text-slate-800 px-1 font-medium">{patientName}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-[#0093a8]">Date:</span>
-                      <span className="border-b border-[#0093a8]/50 flex-1 min-h-[1.2rem] text-slate-800 px-1 font-medium text-center font-mono">{selectedApp.date}</span>
-                    </div>
-                    <div className="col-span-3 flex items-center gap-1 mt-2">
-                      <span className="text-[#0093a8]">Age:</span>
-                      <span className="border-b border-[#0093a8]/50 w-24 min-h-[1.2rem] text-slate-800 px-1 font-medium text-center font-mono">{patientAge || '________'}</span>
-                    </div>
-                  </div>
+                  {/* Horizontal Line separator */}
+                  <hr className="border-t-[1.5px] border-slate-900 my-1.5" />
 
-                  {/* Rx Section */}
-                  <div className="my-6">
-                    <div className="text-[#0093a8] font-serif italic font-extrabold text-3xl mb-4">Rx</div>
-                    <div className="pl-2 text-slate-800 min-h-[180px] flex flex-col gap-1 w-full">
-                      {(prescription || '').split('\n').map((line, idx) => {
-                        if (!line.trim()) return <div key={idx} className="h-3"></div>;
-                        const arabicRegex = /([\u0600-\u06FF].*)/;
-                        const match = line.match(arabicRegex);
-                        if (match) {
-                          const arabicPart = match[0].trim();
-                          const rawNonArabic = line.substring(0, line.indexOf(arabicPart)).trim();
-                          const nonArabicPart = rawNonArabic.endsWith('-') 
-                            ? rawNonArabic.slice(0, -1).trim() 
-                            : rawNonArabic;
-                          return (
-                            <div key={idx} className="flex justify-between items-baseline w-full text-xs border-b border-dashed border-slate-100 pb-0.5">
-                              <span className="font-mono text-sm font-bold text-slate-800 whitespace-nowrap">{nonArabicPart}</span>
-                              <span className="text-[9px] text-slate-500 font-sans whitespace-nowrap select-none" style={{ direction: 'rtl' }}>
-                                {arabicPart}
+                  {/* Date, Name, Age block */}
+                  <div className="w-full text-xs font-bold text-slate-800 space-y-1.5 mt-2">
+                    {/* Date */}
+                    <div className="text-right font-medium">
+                      Le : <span className="font-mono">{selectedApp.date || '..../...../........'}</span>
+                    </div>
+
+                    {/* Patient Information Line */}
+                    <div className="flex justify-between items-baseline pt-1">
+                      {(() => {
+                        const nameParts = (patientName || '').trim().split(/\s+/);
+                        const lastName = nameParts[0] || '';
+                        const firstName = nameParts.slice(1).join(' ') || '';
+                        return (
+                          <>
+                            <div className="flex-1 flex items-baseline mr-4">
+                              <span>Nom :</span>
+                              <span className="border-b border-dashed border-slate-700 flex-1 ml-1 pl-2 font-semibold text-slate-950 min-h-[1rem]">
+                                {lastName || '....................'}
                               </span>
                             </div>
-                          );
-                        }
+                            <div className="flex-1 flex items-baseline mr-4">
+                              <span>Prénom :</span>
+                              <span className="border-b border-dashed border-slate-700 flex-1 ml-1 pl-2 font-semibold text-slate-950 min-h-[1rem]">
+                                {firstName || '....................'}
+                              </span>
+                            </div>
+                            <div className="w-32 flex items-baseline">
+                              <span>âge :</span>
+                              <span className="border-b border-dashed border-slate-700 flex-1 ml-1 text-center font-semibold text-slate-950 min-h-[1rem]">
+                                {patientAge || '.........'}
+                              </span>
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </div>
+                  </div>
+
+                  {/* Divider under Patient Info */}
+                  <hr className="border-t border-slate-800 border-dashed my-3" />
+
+                  {/* ORDONNANCE Title */}
+                  <div className="text-center my-3">
+                    <h3 className="font-extrabold text-base tracking-widest underline decoration-1 underline-offset-4 text-slate-950">ORDONNANCE</h3>
+                  </div>
+
+                  {/* Rx / Medication List */}
+                  <div className="mt-4 pl-4 pr-2 text-slate-900 min-h-[220px] flex flex-col gap-2 w-full">
+                    {(prescription || '').split('\n').map((line, idx) => {
+                      if (!line.trim()) return <div key={idx} className="h-3"></div>;
+                      const arabicRegex = /([\u0600-\u06FF].*)/;
+                      const match = line.match(arabicRegex);
+                      if (match) {
+                        const arabicPart = match[0].trim();
+                        const rawNonArabic = line.substring(0, line.indexOf(arabicPart)).trim();
+                        const nonArabicPart = rawNonArabic.endsWith('-') 
+                          ? rawNonArabic.slice(0, -1).trim() 
+                          : rawNonArabic;
                         return (
-                          <div key={idx} className="text-sm font-mono font-bold text-slate-800 border-b border-dashed border-slate-100 pb-0.5 whitespace-nowrap">
-                            {line}
+                          <div key={idx} className="flex justify-between items-baseline w-full text-[13px] border-b border-dashed border-slate-200 pb-1">
+                            <span className="font-mono font-bold text-slate-950">{nonArabicPart}</span>
+                            <span className="text-[11px] text-slate-600 font-sans font-medium" style={{ direction: 'rtl' }}>
+                              {arabicPart}
+                            </span>
                           </div>
                         );
-                      })}
-                    </div>
+                      }
+                      return (
+                        <div key={idx} className="text-[13px] font-mono font-bold text-slate-950 border-b border-dashed border-slate-200 pb-1">
+                          {line}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 
                 {/* Footer Section */}
-                <div className="border-t-2 border-[#0093a8]/30 pt-4 mt-auto flex justify-between items-end">
-                  <div className="text-right">
-                    <p className="text-[10px] font-bold text-[#0093a8]">Contact Number:</p>
-                    <p className="text-sm font-black text-slate-800 font-mono">{clinicInfo?.phone || '+123-456-7890'}</p>
-                  </div>
-                  <div className="text-center w-40 border-t border-[#0093a8] pt-1">
-                    <p className="text-[9px] font-bold text-[#0093a8]">Signature</p>
+                <div className="mt-auto pt-2">
+                  <hr className="border-t-[1.5px] border-slate-900 my-1" />
+                  <div className="flex flex-col items-center justify-center text-[10px] font-semibold text-slate-800 space-y-0.5">
+                    <p>Cité Frères Mernache (Tala larbaa) Tizi N'bechar / Sétif</p>
+                    <p className="font-mono text-[11px] font-bold">📞 0661 22 16 17</p>
                   </div>
                 </div>
               </div>
@@ -809,19 +832,18 @@ export default function DoctorDashboard() {
                           {showDoseSuggestions && (
                             <div className="absolute right-0 left-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-[180px] overflow-y-auto z-50">
                               {[
-                                "1 حبة 3 مرات يومياً بعد الأكل",
-                                "1 حبة 3 مرات يومياً قبل الأكل",
-                                "1 حبة مرتين يومياً بعد الأكل",
-                                "1 حبة مرتين يومياً قبل الأكل",
-                                "1 حبة يومياً بعد الأكل",
-                                "1 حبة يومياً قبل الأكل",
-                                "1 حبة عند الألم",
-                                "مضمضة 3 مرات يومياً بعد الأكل",
-                                "مضمضة مرتين يومياً بعد الأكل",
-                                "2 حبة مرتين يومياً بعد الأكل",
-                                "2 حبة مرتين يومياً قبل الأكل"
+                                "1 comp 3x/j (Après repas)",
+                                "1 comp 3x/j (Avant repas)",
+                                "1 comp 2x/j (Après repas)",
+                                "1 comp 2x/j (Avant repas)",
+                                "1 comp/j",
+                                "1 comp si douleur",
+                                "Bain de bouche 3x/j",
+                                "Bain de bouche 2x/j",
+                                "2 comp 2x/j (Après repas)",
+                                "2 comp 2x/j (Avant repas)"
                               ]
-                                .filter(d => d.includes(medForm.dose))
+                                .filter(d => d.toLowerCase().includes(medForm.dose.toLowerCase()))
                                 .map((d, idx) => (
                                   <button
                                     key={idx}

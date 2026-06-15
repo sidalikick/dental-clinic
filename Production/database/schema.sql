@@ -52,6 +52,12 @@ CREATE TABLE IF NOT EXISTS clinic_info (
     google_maps_link TEXT,
     facebook_link TEXT,
     instagram_link TEXT,
+    phone VARCHAR(50) DEFAULT '',
+    maps_link TEXT DEFAULT '',
+    facebook TEXT DEFAULT '',
+    instagram TEXT DEFAULT '',
+    doctor_name VARCHAR(255) DEFAULT '',
+    specialty VARCHAR(255) DEFAULT '',
     CONSTRAINT one_row_only CHECK (id = 1)
 );
 

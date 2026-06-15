@@ -71,11 +71,13 @@ CREATE TABLE IF NOT EXISTS clinic_info (
     phone VARCHAR(50) DEFAULT '',
     logo_url TEXT DEFAULT '',
     facebook TEXT DEFAULT '',
-    instagram TEXT DEFAULT ''
+    instagram TEXT DEFAULT '',
+    doctor_name VARCHAR(255) DEFAULT '',
+    specialty VARCHAR(255) DEFAULT ''
 );
 
 -- Seed default clinic info if empty
-INSERT INTO clinic_info (id, name, working_hours, address) 
-VALUES (1, 'عيادة الأسنان', '09:00 - 17:00', 'الجزائر') 
+INSERT INTO clinic_info (id, name, working_hours, address, phone, doctor_name, specialty) 
+VALUES (1, 'Cabinet Dentaire Dr. BOUYOUCEF SOFIANE', '09:00 - 17:00', 'Cité Frères Mernache (Tala larbaa) Tizi N\'bechar / Sétif', '0661 22 16 17', 'Dr. BOUYOUCEF SOFIANE', 'Chirurgie Dentaire') 
 ON CONFLICT (id) DO NOTHING;
 

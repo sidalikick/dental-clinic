@@ -598,7 +598,7 @@ app.get('/api/settings/clinic-info', async (req, res) => {
   try {
     const result = await pool.query('SELECT name, working_hours as "workingHours", address, maps_link as "mapsLink", phone, logo_url as "logoUrl", facebook, instagram, doctor_name as "doctorName", specialty FROM clinic_info WHERE id = 1');
     if (result.rows.length === 0) {
-      res.json({ name: 'عيادة الأسنان', workingHours: '09:00 - 17:00', address: 'الجزائر', mapsLink: '', phone: '', logoUrl: '', facebook: '', instagram: '', doctorName: '', specialty: '' });
+      res.json({ name: 'Cabinet Dentaire Dr. BOUYOUCEF SOFIANE', workingHours: '09:00 - 17:00', address: "Cité Frères Mernache (Tala larbaa) Tizi N'bechar / Sétif", mapsLink: '', phone: '0661 22 16 17', logoUrl: '', facebook: '', instagram: '', doctorName: 'Dr. BOUYOUCEF SOFIANE', specialty: 'Chirurgie Dentaire' });
     } else {
       res.json(result.rows[0]);
     }

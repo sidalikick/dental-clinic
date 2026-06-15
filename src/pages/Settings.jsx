@@ -44,16 +44,16 @@ export default function Settings() {
   const [newUser, setNewUser] = useState({ username: '', password: '', role: 'reception', fullName: '' });
   const [security, setSecurity] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [clinicInfo, setClinicInfo] = useState({
-    name: 'عيادة الأسنان',
+    name: 'Cabinet Dentaire Dr. BOUYOUCEF SOFIANE',
     workingHours: '09:00 - 17:00',
-    address: 'الجزائر',
+    address: "Cité Frères Mernache (Tala larbaa) Tizi N'bechar / Sétif",
     mapsLink: '',
-    phone: '',
+    phone: '0661 22 16 17',
     logoUrl: '',
     facebook: '',
     instagram: '',
-    doctorName: '',
-    specialty: ''
+    doctorName: 'Dr. BOUYOUCEF SOFIANE',
+    specialty: 'Chirurgie Dentaire'
   });
   const [services, setServices] = useState([]);
   const [newService, setNewService] = useState({ name: '', price: '' });
