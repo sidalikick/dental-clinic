@@ -822,4 +822,20 @@ app.use((req, res) => {
   }
 });
 
+// Force update database clinic info on startup to match new details
+pool.query(`
+  UPDATE clinic_info 
+  SET name = 'Cabinet Dentaire Dr. BOUYOUCEF SOFIANE',
+      doctor_name = 'Dr. BOUYOUCEF SOFIANE',
+      specialty = 'Chirurgie Dentaire',
+      address = 'Cité Frères Mernache (Tala larbaa) Tizi N''bechar / Sétif',
+      phone = '0661 22 16 17',
+      working_hours = '09:00 - 17:00'
+  WHERE id = 1
+`).then(() => {
+  console.log('Database forced update: Clinic info updated successfully.');
+}).catch(err => {
+  console.error('Database forced update failed:', err.message);
+});
+
 app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT} (Network accessible)`));
