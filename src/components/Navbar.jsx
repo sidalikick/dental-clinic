@@ -3,6 +3,15 @@ import { Link } from 'react-router-dom';
 import { Stethoscope } from 'lucide-react';
 
 export default function Navbar() {
+  const [clinicInfo, setClinicInfo] = React.useState(null);
+
+  React.useEffect(() => {
+    fetch('/api/settings/clinic-info')
+      .then(res => res.json())
+      .then(data => setClinicInfo(data))
+      .catch(err => console.error('Error fetching clinic info:', err));
+  }, []);
+
   return (
     <nav className="glass sticky top-0 z-50 py-4 px-6 mb-8">
       <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
@@ -12,7 +21,7 @@ export default function Navbar() {
             <Stethoscope size={28} />
           </div>
           <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-            عيادة ابتسامتك
+            {clinicInfo?.name || 'عيادة الأسنان'}
           </span>
         </Link>
         
